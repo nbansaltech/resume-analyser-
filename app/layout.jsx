@@ -1,6 +1,7 @@
 // app/layout.jsx
 import "./globals.css";
 
+
 export const metadata = {
   title: "AI Resume Analyzer",
   description: "Built by Nishant Bansal – Analyze your resume with AI instantly",
