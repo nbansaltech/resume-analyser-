@@ -1,17 +1,6 @@
 import "./globals.css";
 
-export const metadata = {
-  title: "AI Resume Analyzer",
-  description: "Analyze resumes with mock AI feedback instantly.",
-};
 
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
 export const metadata = {
   title: "AI Resume Analyzer",
   description: "Mock AI Resume Analyzer built with Next.js and Tailwind CSS",
