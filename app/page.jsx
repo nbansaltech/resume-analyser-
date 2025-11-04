@@ -1,194 +1,153 @@
 "use client";
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-// Mock AI analysis — purely frontend
-const analyzeResume = (text) => {
-  const lower = text.toLowerCase();
-
-  const skillsList = [
-    "python",
-    "machine learning",
-    "data analysis",
-    "react",
-    "sql",
-    "deep learning",
-    "nlp",
-    "javascript",
-    "html",
-    "css",
-  ];
-
-  const categories = {
-    Technical: ["python", "react", "javascript", "sql", "html", "css"],
-    "AI & ML": ["machine learning", "deep learning", "nlp"],
-    "Data Science": ["data analysis"],
-  };
-
-  const foundSkills = skillsList.filter((s) => lower.includes(s));
-  const score = 70 + Math.random() * 25;
-
-  const recommendations = [];
-  if (!lower.includes("project")) recommendations.push("Add more project-based experience.");
-  if (!lower.includes("intern")) recommendations.push("Include any internship details.");
-  if (foundSkills.length < 4)
-    recommendations.push("Highlight more technical or analytical skills.");
-
-  const categoryScores = Object.entries(categories).map(([cat, keys]) => ({
-    category: cat,
-    score:
-      keys.filter((k) => lower.includes(k)).length > 0
-        ? 70 + Math.random() * 25
-        : 40 + Math.random() * 15,
-  }));
-
-  return {
-    score: score.toFixed(1),
-    foundSkills,
-    recommendations,
-    categoryScores,
-  };
-};
-
 export default function Home() {
-  const [resumeText, setResumeText] = useState("");
-  const [result, setResult] = useState(null);
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
-  const handleAnalyze = () => {
-    if (!resumeText.trim()) return;
-    setLoading(true);
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
     setResult(null);
+  };
+
+  const analyzeResume = async () => {
+    if (!file) return alert("Please upload a resume first!");
+    setLoading(true);
+
+    // Simulate AI analysis
     setTimeout(() => {
-      const analysis = analyzeResume(resumeText);
-      setResult(analysis);
+      setResult({
+        name: "Mock Candidate",
+        summary:
+          "Strong background in software development, data analysis, and machine learning. Excellent teamwork and communication skills.",
+        strengths: [
+          "Python, React, and SQL proficiency",
+          "Project leadership and problem-solving",
+          "Clear and structured resume format",
+        ],
+        improvements: [
+          "Add measurable achievements",
+          "Include GitHub/portfolio links",
+          "Expand experience section with impact metrics",
+        ],
+        score: 87,
+      });
       setLoading(false);
-    }, 1000);
+    }, 2500);
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-100 flex flex-col items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-5xl w-full bg-white/40 backdrop-blur-lg border border-white/30 shadow-2xl rounded-3xl p-8 md:p-12"
-      >
-        <header className="text-center mb-8">
-          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">
-            AI Resume Analyzer Pro
-          </h1>
-          <p className="text-gray-600 mt-3 text-sm md:text-base">
-            Upload or paste your résumé text below to get instant AI-powered insights.
-          </p>
-        </header>
+    <main className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center justify-between">
+      <div className="w-full max-w-3xl mt-16 mb-8 p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+        <h1 className="text-3xl font-bold text-center mb-2 text-blue-600">
+          AI Resume Analyzer
+        </h1>
+        <p className="text-center text-gray-500 mb-6">
+          Upload your resume and get instant AI-powered feedback.
+        </p>
 
-        <section className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1 flex flex-col">
-            <textarea
-              className="w-full h-64 p-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none bg-white/70 text-gray-800 placeholder-gray-400 shadow-inner"
-              placeholder="Paste your résumé text here..."
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-            />
+        <div className="border-2 border-dashed border-blue-400 rounded-xl p-6 text-center">
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange}
+            className="hidden"
+            id="resume-upload"
+          />
+          <label
+            htmlFor="resume-upload"
+            className="cursor-pointer text-blue-500 font-semibold"
+          >
+            {file ? file.name : "Click to upload your resume"}
+          </label>
+        </div>
 
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={handleAnalyze}
-              disabled={loading}
-              className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-blue-500 hover:opacity-90 text-white font-semibold py-3 rounded-2xl shadow-lg transition disabled:opacity-60"
-            >
-              {loading ? "Analyzing..." : "Analyze Resume"}
-            </motion.button>
+        <button
+          onClick={analyzeResume}
+          disabled={!file || loading}
+          className={`mt-6 w-full py-3 rounded-xl text-white font-semibold transition ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Analyzing..." : "Analyze Resume"}
+        </button>
 
-            {loading && (
-              <div className="flex justify-center mt-6">
-                <div className="h-8 w-8 border-4 border-t-indigo-600 border-indigo-200 rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
+        {loading && (
+          <motion.div
+            className="mt-8 flex justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+          </motion.div>
+        )}
 
-          {result && (
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex-1 bg-white/70 border border-gray-200 rounded-2xl shadow-inner p-6 overflow-auto"
-            >
-              <h2 className="text-2xl font-semibold text-indigo-600 mb-3">AI Analysis Report</h2>
+        {result && (
+          <motion.div
+            className="mt-10 p-6 bg-gray-50 rounded-xl border"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">
+              Resume Analysis Report
+            </h2>
+            <p className="text-gray-700 mb-4">
+              <strong>Candidate:</strong> {result.name}
+            </p>
 
-              {/* Score Section */}
-              <div className="mb-5">
-                <p className="text-gray-700 mb-2 font-medium">
-                  Overall Resume Strength:{" "}
-                  <span className="text-indigo-600 font-semibold text-lg">
-                    {result.score}%
-                  </span>
-                </p>
-                <div className="w-full h-3 bg-gray-200 rounded-full">
-                  <div
-                    className="h-3 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all"
-                    style={{ width: `${result.score}%` }}
-                  ></div>
-                </div>
-              </div>
+            <p className="text-gray-700 mb-4">
+              <strong>Summary:</strong> {result.summary}
+            </p>
 
-              {/* Skills Section */}
-              <div className="mb-5">
-                <h3 className="font-semibold text-gray-800 mb-2">Detected Skills</h3>
-                {result.foundSkills.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {result.foundSkills.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-sm">No major skills detected.</p>
-                )}
-              </div>
-
-              {/* Category Breakdown */}
-              <div className="mb-5">
-                <h3 className="font-semibold text-gray-800 mb-2">Category Breakdown</h3>
-                {result.categoryScores.map((cat, idx) => (
-                  <div key={idx} className="mb-3">
-                    <div className="flex justify-between mb-1 text-sm text-gray-600">
-                      <span>{cat.category}</span>
-                      <span>{cat.score.toFixed(0)}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
-                      <div
-                        className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all"
-                        style={{ width: `${cat.score}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Recommendations */}
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2">Suggestions</h3>
-                <ul className="list-disc list-inside text-gray-600 text-sm">
-                  {result.recommendations.length > 0 ? (
-                    result.recommendations.map((rec, i) => <li key={i}>{rec}</li>)
-                  ) : (
-                    <li>Your résumé looks well-balanced. Great work!</li>
-                  )}
+                <h3 className="font-semibold text-green-600 mb-2">Strengths</h3>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  {result.strengths.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
                 </ul>
               </div>
-            </motion.div>
-          )}
-        </section>
-      </motion.div>
+              <div>
+                <h3 className="font-semibold text-red-600 mb-2">
+                  Improvements
+                </h3>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  {result.improvements.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
-      <footer className="mt-8 text-gray-500 text-sm text-center">
-        © 2025 <span className="font-semibold text-indigo-600">Your Name</span> — AI Resume Analyzer Pro
+            <div className="mt-6">
+              <p className="text-gray-800">
+                <strong>AI Fit Score:</strong>{" "}
+                <span className="text-blue-600 font-bold">
+                  {result.score} / 100
+                </span>
+              </p>
+              <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
+                <div
+                  className="bg-blue-500 h-3 rounded-full transition-all"
+                  style={{ width: `${result.score}%` }}
+                ></div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      <footer className="pb-8 text-sm text-gray-500 text-center">
+        © 2025 <span className="font-semibold">Your Name</span> — AI Resume
+        Analyzer Pro <br />
+        <span className="text-gray-400">Built with Next.js & TailwindCSS</span>
       </footer>
     </main>
   );
