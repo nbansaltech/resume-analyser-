@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-spacy
-scikit-learn
-pdfplumber
-python-docx
-pydantic
